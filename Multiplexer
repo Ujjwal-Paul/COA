@@ -1,0 +1,101 @@
+-- Simple 4X1 mux design
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity multiplexer is
+port(
+  s0: in std_logic;
+  s1: in std_logic;
+  i0: in std_logic;
+  i1: in std_logic;
+  i2: in std_logic;
+  i3: in std_logic;
+  output: out std_logic);
+end multiplexer;
+
+architecture rtl of multiplexer is
+begin
+  process(s0, s1, i0, i1, i2, i3) is
+  begin
+   output <= ((not s0) and (not s1) and i0) or ((not s0) and s1 and i1) or (s0 and (not s1) and i2) or (s0 and s1 and i3);
+  end process;
+end rtl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Testbench for multiplexer
+library IEEE;
+use IEEE.std_logic_1164.all;
+ 
+entity testbench is
+-- empty
+end testbench; 
+
+architecture tb of testbench is
+
+-- DUT component
+component multiplexer is
+port(
+  s0: in std_logic;
+  s1: in std_logic;
+  i0: in std_logic;
+  i1: in std_logic;
+  i2: in std_logic;
+  i3: in std_logic;
+  output: out std_logic);
+end component;
+
+signal s0_in, s1_in, i0_in, i1_in, i2_in, i3_in, output_out: std_logic;
+
+begin
+
+  -- Connect DUT
+  DUT: multiplexer port map(s0_in, s1_in, i0_in, i1_in, i2_in, i3_in, output_out);
+
+  process
+  begin
+    i0_in <= '0';
+    i1_in <= '1';
+    i2_in <= '1';
+    i3_in <= '1';
+    
+    s0_in <= '0';
+    s1_in <= '0';
+    wait for 1 ns;
+    assert(output_out=i0_in) report "Fail 0/0" severity error;
+    
+    s0_in <= '1';
+    s1_in <= '0';
+    wait for 1 ns;
+    assert(output_out=i1_in) report "Fail 0/0" severity error;
+
+     s0_in <= '0';
+     s1_in <= '1';
+     wait for 1 ns;
+     assert(output_out=i2_in) report "Fail 0/1" severity error;
+     
+     s0_in <= '1';
+     s1_in <= '1';
+     wait for 1 ns;
+     assert(output_out=i3_in) report "Fail 0/1" severity error;
+
+    -- Clear inputs
+    i0_in <= '0';
+    i1_in <= '0';
+    i2_in <= '0';
+    i3_in <= '0';
+
+    assert false report "Test done." severity note;
+    wait;
+  end process;
+end tb;
