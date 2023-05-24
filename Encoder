@@ -1,0 +1,116 @@
+-- Simple 4:2 encoder design
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity encoder is
+port(
+  y0: in std_logic;
+  y1: in std_logic;
+  y2: in std_logic;
+  y3: in std_logic;
+  a0: out std_logic;
+  a1: out std_logic);
+end encoder;
+
+architecture rtl of encoder is
+begin
+  process(y0,y1,y2,y3) is
+  begin
+    a0<= y0 or y2;
+    a1<= y0 or y1;
+  end process;
+end rtl;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Testbench for 4:2 encoder
+library IEEE;
+use IEEE.std_logic_1164.all;
+ 
+entity testbench is
+-- empty
+end testbench; 
+
+architecture tb of testbench is
+
+-- DUT component
+component encoder is
+port(
+  y0: in std_logic;
+  y1: in std_logic;
+  y2: in std_logic;
+  y3: in std_logic;
+  a0: out std_logic;
+  a1: out std_logic);
+end component;
+
+signal y0_in, y1_in,y2_in,y3_in, a0_out,a1_out: std_logic;
+
+begin
+
+  -- Connect DUT
+  DUT: encoder port map(y0_in, y1_in,y2_in,y3_in,a0_out, a1_out);
+
+  process
+  begin
+    y0_in <= '0';
+    y1_in <= '0';
+    y2_in <= '0';
+    y3_in <= '1';
+    wait for 1 ns;
+    assert(a0_out='0') report "Fail 0/0" severity error;
+     wait for 1 ns;
+    assert(a1_out='0') report "Fail 0/0" severity error;
+  
+  
+    y0_in <= '0';
+    y1_in <= '0';
+    y2_in <= '1';
+    y3_in <= '0';
+    wait for 1 ns;
+    assert(a0_out='1') report "Fail 0/0" severity error;
+     wait for 1 ns;
+    assert(a1_out='0') report "Fail 0/0" severity error;
+  
+
+    y0_in <= '0';
+    y1_in <= '1';
+    y2_in <= '0';
+    y3_in <= '0';
+    wait for 1 ns;
+    assert(a0_out='0') report "Fail 0/0" severity error;
+     wait for 1 ns;
+    assert(a1_out='1') report "Fail 0/0" severity error;
+  
+
+    y0_in <= '1';
+    y1_in <= '0';
+    y2_in <= '0';
+    y3_in <= '0';
+    wait for 1 ns;
+    assert(a0_out='1') report "Fail 0/0" severity error;
+     wait for 1 ns;
+    assert(a1_out='1') report "Fail 0/0" severity error;
+  
+    -- Clear inputs
+    
+    y0_in <= '0';
+    y1_in <= '0';
+    y2_in <= '0';
+    y3_in <= '0';
+
+    assert false report "Test done." severity note;
+    wait;
+  end process;
+end tb;
