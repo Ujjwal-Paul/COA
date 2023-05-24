@@ -1,0 +1,105 @@
+-- Simple 2X4 decoder design
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity decoder is
+port(
+  s0: in std_logic;
+  s1: in std_logic;
+  d0: out std_logic;
+  d1: out std_logic;
+  d2: out std_logic;
+  d3: out std_logic);
+end decoder;
+
+architecture rtl of decoder is
+begin
+  process(s0, s1) is
+  begin
+    d0 <= (not s0) and (not s1);
+    d1 <= (not s0) and s1;
+    d2 <= s0 and (not s1);
+    d3 <= s0 and s1;
+  end process;
+end rtl;
+
+
+
+
+
+
+
+
+
+
+
+-- Testbench for decoder
+library IEEE;
+use IEEE.std_logic_1164.all;
+ 
+entity testbench is
+-- empty
+end testbench; 
+
+architecture tb of testbench is
+
+-- DUT component
+component decoder is
+port(
+  s0: in std_logic;
+  s1: in std_logic;
+  d0: out std_logic;
+  d1: out std_logic;
+  d2: out std_logic;
+  d3: out std_logic);
+end component;
+
+signal s0_in, s1_in, d0_out, d1_out, d2_out, d3_out: std_logic;
+
+begin
+
+  -- Connect DUT
+  DUT: decoder port map(s0_in, s1_in, d0_out, d1_out, d2_out, d3_out);
+
+  process
+  begin
+    s0_in <= '0';
+    s1_in <= '0';
+    wait for 1 ns;
+    assert(d0_out='1') report "Fail 0/0" severity error;
+    assert(d1_out='0') report "Fail 0/0" severity error;
+    assert(d2_out='0') report "Fail 0/0" severity error;
+    assert(d3_out='1') report "Fail 0/0" severity error;
+    
+    s0_in <= '0';
+    s1_in <= '1';
+    wait for 1 ns;
+    assert(d0_out='0') report "Fail 0/1" severity error;
+    assert(d1_out='1') report "Fail 0/1" severity error;
+    assert(d2_out='0') report "Fail 0/1" severity error;
+    assert(d3_out='0') report "Fail 0/1" severity error;
+    
+    s0_in <= '1';
+    s1_in <= '0';
+    wait for 1 ns;
+    assert(d0_out='0') report "Fail 1/0" severity error;
+    assert(d1_out='0') report "Fail 1/0" severity error;
+    assert(d2_out='1') report "Fail 1/0" severity error;
+    assert(d3_out='0') report "Fail 1/0" severity error;
+    
+    s0_in <= '1';
+    s1_in <= '1';
+    wait for 1 ns;
+    assert(d0_out='0') report "Fail 1/1" severity error;
+    assert(d1_out='0') report "Fail 1/1" severity error;
+    assert(d2_out='0') report "Fail 1/1" severity error;
+    assert(d3_out='1') report "Fail 1/1" severity error;
+    
+    -- Clear inputs
+    s0_in <= '0';
+    s1_in <= '0';
+
+    assert false report "Test done." severity note;
+    wait;
+  end process;
+end tb;
